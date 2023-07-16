@@ -1,4 +1,5 @@
 ﻿using Assigment_Book.Controllers;
+using Assigment_Book.Exceptions;
 
 Console.WriteLine("=== Book Management Program ===");
 
@@ -19,10 +20,20 @@ do
     Console.WriteLine("10. Display all authors");
     Console.WriteLine("11. Update author");
     Console.WriteLine("12. Remove author");
-    Console.WriteLine("0. Exit");
+    Console.WriteLine("13. Exit");
     
     Console.Write("Enter your choice: ");
-    int choice = Convert.ToInt32(Console.ReadLine());
+    string sChoice = Console.ReadLine();
+
+    int choice = 0;
+    try
+    {
+        choice = CheckChoice(sChoice);
+    }
+    catch (InputException e)
+    {
+        Console.WriteLine(e.Message);
+    }
 
     switch (choice)
     {
@@ -62,8 +73,33 @@ do
         case 12:
             authorManagement.RemoveAuthor();
             break;
-        case 0:
+        case 13:
             Console.WriteLine("Program ended!");
             return;
     }
 } while (true);
+
+static int CheckChoice(string sChoice)
+{
+    int choice = 0;
+    if (sChoice.Equals(""))
+    {
+        throw new InputException("Choice can not be empty");
+    }
+    try
+    {
+        if (!int.TryParse(sChoice, out choice))
+        {
+            throw new InputException("Choice must be a number");
+        }
+        if (choice < 1 | choice > 13)
+        {
+            throw new InputException("Choice must be from 1 to 13");
+        }
+    }
+    catch (InputException e)
+    {
+        Console.WriteLine(e.Message);
+    }
+    return choice;
+}
